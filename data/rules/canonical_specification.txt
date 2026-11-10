@@ -1,0 +1,51 @@
+CANONICAL SPECIFICATION — AI CONTENT SYSTEM (DRAFT v0.1)
+Status: drafted from the team lead's shared chats. Definitions below are the working schema until the owner supplies the full version.
+
+1. REQUEST TYPES
+- NEW_CONTENT: website blog, temple page, darshan page, puja/chadhava/seva page, FAQ, metadata, ideas.
+- REVAMP: rewrite of an existing page under constraints (layout kept, content re-evaluated).
+- REVISION: a small edit to approved content. Preserve approved strategy unless the change materially alters it.
+
+2. CONTENT DNA (resolve before writing)
+reader, reader task/intent, content type, format, property (Naman Darshan / Naman Puja), offer, journey stage (informational / commercial / hybrid), evidence needed, primary message, desired action (CTA).
+
+3. FORMAT & TEMPLATE FIDELITY
+- Temple page and darshan page templates (approved structural standards for future pages; structure only, never facts):
+  Temple page: keyword-led reusable headings; temple-specific body.
+  Darshan page: hybrid. Informational spine = the full devotee journey from entry to sanctum and back (approach, entry gate, key stages, deities seen, exit), plus timings, entry rules, festival-period darshan and prasad information. Commercial layer is limited to: hero, one service section, booking process, final CTA.
+- Do not carry facts, routes, rituals, legends or wording from one temple into another temple's page.
+- Headings are reusable patterns (change only temple name, deity, location). Body copy is unique per temple to avoid duplication across hundreds of pages.
+- Exceptions only when a temple's reality or a locked layout makes a module inapplicable; document the exception.
+
+4. EVIDENCE RULES
+- Verified fact: confirmed by an authoritative current source. State plainly.
+- Tradition/belief/legend: state with attribution.
+- Unverifiable operational detail: qualify, omit, or flag for operational confirmation.
+- Time-sensitive claims need a recency check. Cite the source type in internal notes.
+- SERP analysis: AI-cited URLs plus a predetermined top 3 or top 5 organic set only. Include Wikipedia when it ranks in that set.
+
+5. REVAMP CONSTRAINT OBJECT (create internally for every revamp)
+preserve_constraints: what exactly is preserved (page_layout, template, module_order, URL, heading, copy, claim...). Preserving one layer does not preserve another.
+legacy_content_disposition: for each material section/claim: source_location, proposition, disposition (retain, verify_and_retain, rewrite, relocate, merge, remove, replace), reason, evidence_required, replacement, duplication_owner.
+mandatory_removals: propositions that must not survive, checked at proposition level (verbatim, close paraphrase, implication, and in headings, tables, FAQs, callouts, metadata, testimonials, CTAs).
+freshness_revalidation: for each inherited time-sensitive claim: claim, recency_requirement, preferred_source, verification_status, disposition if unverified.
+Routing order: resolve constraints; classify existing asset; inventory claims; apply removals; rebind offers to the Brand Constitution; list claims needing fresh research; recalculate duplication; rebuild section functions within the layout; blueprint; draft; claim audit and QA.
+
+6. SEMANTIC OWNERSHIP
+Each proposition (service definition, temple information, booking process) is owned by one section or page. Others may cross-reference briefly, not repeat.
+
+7. QA RULES (release requires all to pass)
+- Zero unsupported core claims.
+- Zero brand violations (terminology, restricted or disallowed claims, wrong property).
+- Zero surviving mandatory removals, including by meaning.
+- Time-sensitive facts verified or qualified.
+- No repeated service definitions or duplicated propositions.
+- Headings reflect section function and are reusable.
+- Format and template followed; hybrid balance respected on darshan pages.
+- No vague deferral where a researched answer exists.
+- Naman disclaimer not placed in hero or final CTA; one short responsibility note after the service explanation.
+- CTA matches the same offer and destination as the page.
+- Informational to narrative ratio within range on temple pages.
+On failure: revise, then re-check the affected gates.
+
+OPEN ITEMS (confirm with team lead): full framework library; blog flow architecture rules; narrative expression profile; confidence thresholds; complete content-type list.

@@ -1,0 +1,55 @@
+BRAND CONSTITUTION — NAMAN (DRAFT v0.1)
+Status: drafted from the team lead's shared chats. Only facts established there are stated. Everything else is listed under OPEN ITEMS and must NOT be invented.
+
+1. STRUCTURE
+One master brand, two websites: Naman Darshan and Naman Puja. Never blur the two. Resolve which property applies before writing any offer.
+
+2. DARSHAN TERMINOLOGY
+- Primary public term: Guided VIP Darshan.
+- Secondary term: VIP Darshan Assistance.
+- Do not weaken the approved service into vague "guided darshan", "support", "guidance" or "assistance" where that changes its meaning.
+- Approved service definition: Naman Darshan provides Guided VIP Darshan, also referred to as VIP Darshan Assistance, at selected temples in accordance with applicable temple rules and current local guidelines. Availability is temple-specific and must be verified separately.
+- Never write "Naman Darshan does not provide VIP Darshan."
+
+3. CHADHAVA AND SEVA
+Chadhava is the hub. Seva is a subset of Chadhava.
+
+4. CLAIMS
+Restricted (do not use unless verified for the specific service): "100% Darshan Guaranteed", "No waiting", "Skip-the-line", "Guaranteed access", promises of faster entry or reduced waiting time.
+Disallowed without verification: guaranteed entry, unauthorised queue-skipping, official temple affiliation.
+Do not claim a service automatically includes items (for example water or Mahaprasad) unless that inclusion is currently verified for that service.
+Do not present beliefs about outcomes (for example that an offering attracts wealth or positive energy) as factual or guaranteed.
+Do not state unverified ritual details (for example where offerings are made).
+Do not present ritual timings as permanently fixed unless an authoritative source supports that.
+Testimonials must be relevant to the page's service and temple, and verified. No unrelated testimonials.
+
+5. TEMPLE INFORMATION
+Temple information must be accurate and current. Temple timings, darshan rules and service availability must be checked against current authoritative sources (for example the temple administration and current local advisories) and re-checked periodically.
+
+6. TONE AND STYLE
+Clear and respectful. Adapt writing to content type, audience and journey stage. Prefer clarity to flowery language. Do not place a Naman responsibility disclaimer in the hero or final CTA, where it reads as a booking restriction.
+
+7. AUDIENCES, CTAs, SEO, E-E-A-T
+Align each CTA to the same offer and destination as the page. Apply the audience, SEO and E-E-A-T rules for the content type.
+
+8. SERVICE FACTS (source: namandarshan.com pages read on 06-Oct-2026; confirm with the brand owner before relying)
+- Naman Darshan's site lists these services: Temple Darshan, Puja Services, Chadhava Seva, Prasadam Seva, Yatra Packages, Astro Services and international temples. Tagline: "Seva, Suvidha, Samarpan". The site states Namandarshan is an alliance of Traininglobe Consultancy Private Limited.
+- Darshan service as described on the site: a local Pandit Ji accompanies the devotee, guides them through the temple and shares the temple's history and significance. Booking flow: select the temple, choose a date, receive confirmation and guided assistance.
+- Operating model stated on the Jagannath Puri page: Naman Darshan is a technology platform that arranges darshan on the devotee's behalf through independent service providers, subject to the temple's rules. Naman is not the temple authority.
+- A Naman darshan page exists for Jagannath Puri Temple (Puri, Odisha) with a "Book Guided Darshan" option.
+- Contact channels exist on the site (phone/WhatsApp, a support/grievance email and a sales email).
+- No prices were published on the pages read. Do not state prices.
+
+9. FOUND ON THE CURRENT SITE BUT NOT TO BE CARRIED INTO REVAMPED PAGES
+- The banner "100% Darshan Guaranteed".
+- "Namandarshan does not provide VIP Darshan" (in the darshan page description).
+- "Skip the Queue" wording.
+- "Guidance through the optimal entry gates to reduce waiting time" and any other waiting-time promise.
+- The statistic "4.7 (10k+ Successful Temple Darshan)" unless the owner verifies it.
+- Testimonials about other temples or other services (for example Ram Mandir, Kedarnath, online puja) on a temple-specific page.
+- The same service block (for example "Guided Darshan Support") repeated more than once on a page.
+
+10. TERMINOLOGY CHECK FOR THE OWNER
+The live site uses "Guided Darshan Assistance" as its main term. The approved public terms in this document are "Guided VIP Darshan" (primary) and "VIP Darshan Assistance" (secondary). Revamped pages follow the approved terms in this document until the owner confirms otherwise.
+
+OPEN ITEMS (confirm with team lead and do NOT invent): prices and inclusions per service; the complete temple list; target audiences and personas; approved CTA wording; approved testimonials; SEO priority keywords; compliance and legal wording; list of Puja/Chadhava/Seva offers.

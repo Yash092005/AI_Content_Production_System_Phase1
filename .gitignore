@@ -1,0 +1,29 @@
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.cache/
+
+# Logs
+logs/
+*.log
+
+# Runtime configuration and job state
+data/config/
+data/config/jobs/
+
+# Generated runtime files
+*.tmp
+.DS_Store

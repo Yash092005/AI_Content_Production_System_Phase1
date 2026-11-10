@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "note": "Which numbered sections of each rule document a pipeline stage receives. Section numbers refer to the headings in the three rule documents. DRAFT: needs the rule owner's sign-off and a before/after quality check on saved requests. If a section number is missing from a document (for example after it is edited), that whole document is sent in full for the stage and a warning is logged, so a profile can never silently drop rules. Stages not listed (strategy, reference, extract, revise) use no rule documents.",
+  "profiles": {
+    "research":           {"master": ["preamble", "1", "2", "5"],            "canonical": ["preamble", "4"],                       "brand": ["preamble", "4", "5"]},
+    "research_blueprint": {"master": ["preamble", "1", "2", "3", "5", "6"], "canonical": ["preamble", "1", "2", "3", "4", "5"],   "brand": ["preamble", "1", "4", "5", "9"]},
+    "blueprint":          {"master": ["preamble", "1", "2", "3", "5", "6"], "canonical": ["preamble", "1", "2", "3", "4", "5"],   "brand": ["preamble", "1", "4", "5", "9"]},
+    "generate":           {"master": ["preamble", "1", "2", "6", "7", "10"], "canonical": ["preamble", "2", "3", "4", "5", "6"],  "brand": ["preamble", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]},
+    "qa":                 {"master": ["preamble", "2", "6", "7", "8"],       "canonical": ["preamble", "3", "4", "5", "6", "7"],   "brand": ["preamble", "2", "3", "4", "6", "9"]}
+  }
+}
