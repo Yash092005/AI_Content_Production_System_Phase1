@@ -3,7 +3,7 @@ import time
 
 from app.ai import budget
 from app.ai.base import ApiError, OutputTruncated, post_json
-from app.ai.health import classify, parse_wait
+from app.ai.health import limit_unit, classify, parse_wait
 from app.ai.quota import GROUPS
 from app.config import runtime
 from app.metrics.usage import LOG
@@ -109,9 +109,9 @@ class GroqClient:
         except Exception as e:
             info = classify(e)
             LOG.record(**row, ok=False, error=f"{info['kind']}: {e}", duration_s=round(time.time() - t0, 2))
-            budget.TRACKER.settle("groq", model, rid, 0, group=group)
+            budget.TRACKER.settle("groq", model, rid, 0, group=group, failed=True)
             GROUPS.observe_from_error("groq", self.key_id, e)           # a Groq limit error names the organisation
-            budget.TRACKER.note_limit_hit("groq", model, info["kind"], group=self.group)
+            budget.TRACKER.note_limit_hit("groq", model, info["kind"], group=self.group, unit=limit_unit(e))
             raise
         u = data.get("usage") or {}
         total = u.get("total_tokens") or ((u.get("prompt_tokens") or 0) + (u.get("completion_tokens") or 0))
