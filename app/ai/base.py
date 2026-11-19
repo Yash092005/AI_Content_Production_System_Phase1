@@ -71,20 +71,41 @@ def _pick_headers(r):
         return {}
 
 
+DAILY_MARKERS = ("perday", "per day", "(tpd)", "(rpd)")
+MAX_RETRY_WAIT = 120.0          # a provider asking for longer than this is not waited for inside one request
+
+
+def _server_wait(headers, body):
+    """The wait the provider asked for: the Retry-After header, else Google's RetryInfo.retryDelay ('35s'). None if absent."""
+    ra = _retry_after(headers)
+    if ra:
+        return ra
+    try:
+        for d in json.loads(body).get("error", {}).get("details", []):
+            if d.get("retryDelay"):
+                return float(str(d["retryDelay"]).strip().rstrip("s"))
+    except Exception:
+        pass
+    return None
+
+
 def post_json(url, payload, headers, timeout=120, retries=4, sleep=time.sleep, meta=None):
-    """POST with backoff (15s, 30s, 45s, 60s on 429/5xx; a server Retry-After wins when it is shorter). Errors include
-    Google's message. When `meta` (a dict) is given it receives the status and the rate-limit headers (never the request)."""
+    """POST with bounded backoff on 429/5xx. When the provider says how long to wait (Retry-After / retryDelay) that wait is
+    honoured, longer or shorter than our own backoff (15s, 30s, 45s, 60s); a wait above MAX_RETRY_WAIT, or a DAILY limit
+    (Gemini or Groq), is not retried at all. Errors include the provider's message. When `meta` (a dict) is given it
+    receives the status and the rate-limit headers (never the request)."""
     for attempt in range(retries + 1):
         r = requests.post(url, json=payload, headers=headers, timeout=timeout)
         picked = _pick_headers(r)
         if meta is not None:
             meta["status"], meta["headers"] = r.status_code, picked
-        daily = r.status_code == 429 and "PerDay" in r.text  # daily quota: retrying only wastes requests
+        daily = r.status_code == 429 and any(m in r.text.lower() for m in DAILY_MARKERS)  # retrying only wastes requests
         if r.status_code in RETRY_STATUS and attempt < retries and not daily:
-            wait = 15 * (attempt + 1)
-            ra = _retry_after(picked)
-            sleep(min(wait, ra) if ra else wait)
-            continue
+            asked = _server_wait(picked, r.text) if r.status_code == 429 else _retry_after(picked)
+            delay = asked if asked else 15 * (attempt + 1)
+            if delay <= MAX_RETRY_WAIT:
+                sleep(delay + (1.0 if asked else 0.0))      # +1 s so we arrive after the window reopens, not at its edge
+                continue
         if r.status_code >= 400:
             raise ApiError(r.status_code, r.text, picked)
         return r.json()

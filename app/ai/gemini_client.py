@@ -3,7 +3,7 @@ import time
 
 from app.ai import budget
 from app.ai.base import ApiError, OutputTruncated, CapabilityUnavailable, post_json
-from app.ai.health import HEALTH, classify, grounding_allowed, grounding_policy
+from app.ai.health import limit_unit, HEALTH, classify, grounding_allowed, grounding_policy
 from app.ai.quota import GROUPS
 from app.config import runtime
 from app.metrics.usage import LOG
@@ -129,9 +129,9 @@ class GeminiClient:
         except Exception as e:
             info = classify(e)
             LOG.record(**row, ok=False, error=f"{info['kind']}: {e}", duration_s=round(time.time() - t0, 2))
-            budget.TRACKER.settle("gemini", model, rid, 0, group=group)
+            budget.TRACKER.settle("gemini", model, rid, 0, group=group, failed=True)
             GROUPS.observe_from_error("gemini", self.key_id, e)         # a Google error may name the project
-            budget.TRACKER.note_limit_hit("gemini", model, info["kind"], group=self.group)
+            budget.TRACKER.note_limit_hit("gemini", model, info["kind"], group=self.group, unit=limit_unit(e))
             raise
         u = data.get("usageMetadata") or {}
         prompt_t, cand_t = u.get("promptTokenCount"), u.get("candidatesTokenCount")

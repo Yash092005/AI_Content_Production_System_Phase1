@@ -65,6 +65,38 @@ def classify(exc):
     return {"kind": "client", "retry_after": None}
 
 
+def limit_unit(exc):
+    """Which unit a 429 is about: 'requests' (RPM/RPD), 'tokens' (TPM/TPD) or 'unknown'.
+
+    Only a REQUEST limit may teach the planner a request ceiling. A token limit (Groq 'tokens per minute (TPM)', Google
+    '...InputTokensPer...') says nothing about how many requests are allowed: learning one from it made a single large request
+    lower the provider's request ceiling to 1, which excluded the provider for the rest of the process."""
+    metric = f"{getattr(exc, 'quota_metric', '')} {getattr(exc, 'quota_id', '')}".lower()
+    text = f"{exc}".lower()
+    if any(k in metric for k in ("token",)) or any(k in text for k in ("tokens per minute", "tokens per day", "(tpm)", "(tpd)")):
+        return "tokens"
+    if any(k in metric for k in ("request",)) or any(k in text for k in ("requests per minute", "requests per day", "(rpm)", "(rpd)")):
+        return "requests"
+    return "unknown"
+
+
+def seconds_until_daily_reset(provider, now=None):
+    """Seconds until the provider's daily quota resets. Gemini: midnight US Pacific time (Google's documented reset).
+    Groq and anything else: 24 h (a rolling day is the safe assumption)."""
+    now = time.time() if now is None else now
+    if provider != "gemini":
+        return 86400.0
+    import datetime as dt
+    try:
+        from zoneinfo import ZoneInfo
+        tz = ZoneInfo("America/Los_Angeles")
+    except Exception:                                   # no tz database on the host: PST is at most 1 h off
+        tz = dt.timezone(dt.timedelta(hours=-8))
+    local = dt.datetime.fromtimestamp(now, tz)
+    midnight = (local + dt.timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+    return max(60.0, midnight.timestamp() - now)
+
+
 class Health:
     def __init__(self, clock=time.time):
         self.clock = clock
@@ -85,6 +117,9 @@ class Health:
             seconds = 0
             if kind == "rpm":
                 seconds = max(wait or 65, 30)
+            elif kind == "daily" and provider == "gemini":
+                # Google's retryDelay on a DAILY 429 is a few seconds and misleading; the quota returns at midnight Pacific.
+                seconds = max(seconds_until_daily_reset("gemini", self.clock()) + 60, 900)
             elif kind == "daily":
                 seconds = max(wait or 3600, 900)
             elif kind == "unknown_quota":

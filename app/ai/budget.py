@@ -160,14 +160,17 @@ class Tracker:
         """Count a request the moment it is sent (so parallel sessions see it); settle() corrects it to real usage."""
         with self._lock:
             self._seq += 1
-            self._dq(self._k(provider, model, group)).append([self.clock(), int(tokens), self._seq])
+            self._dq(self._k(provider, model, group)).append([self.clock(), int(tokens), self._seq, False])
             return self._seq
 
-    def settle(self, provider, model, rid, tokens, group=None):
+    def settle(self, provider, model, rid, tokens, group=None, failed=False):
+        """Correct a reservation to real usage. failed=True: the provider refused it (still counted for pacing, but never as
+        evidence of how many requests the quota allows)."""
         with self._lock:
             for row in self._dq(self._k(provider, model, group)):
                 if row[2] == rid:
                     row[1] = int(tokens)
+                    row[3] = bool(failed)
                     return
 
     def _window(self, key, seconds):
@@ -238,23 +241,39 @@ class Tracker:
         return max(0, limit - remaining)
 
     # ---- learned ceilings ---------------------------------------------------------------------------------------
-    def note_limit_hit(self, provider, model, kind, group=None):
-        """A limit error happened: whatever this group had used then is, at most, its ceiling. Remember it."""
+    def note_limit_hit(self, provider, model, kind, group=None, unit="requests"):
+        """A REQUEST limit error happened: the requests this group had completed in that window are, at most, its ceiling.
+
+        Three rules keep this from ever locking a provider out (the earlier version did, permanently, after one 429):
+          * only request limits teach a request ceiling (unit='requests'); a token limit (TPM/TPD) or an unclear one does not;
+          * the refused request itself is not counted, and with no completed request in the window nothing is learned
+            (the quota was used elsewhere: another app or instance, or before a restart);
+          * a learned ceiling expires: per-minute after budget.learned_rpm_minutes (10), per-day at the daily reset."""
+        if unit != "requests" or kind not in ("rpm", "daily"):
+            return
         key = self._k(provider, model, group)
         with self._lock:
-            if kind == "rpm":
-                n, name = self._window(key, 60.0)[1], "rpm"
-            elif kind == "daily":
-                n, name = self._window(key, DAY)[1], "rpd"
-            else:
+            seconds, name = (60.0, "rpm") if kind == "rpm" else (DAY, "rpd")
+            cutoff = self.clock() - seconds
+            n = sum(1 for r in self._dq(key) if r[0] >= cutoff and not (len(r) > 3 and r[3]))
+            if n < 1:
                 return
-            if n >= 1:
-                cur = self._learned.setdefault(key, {})
-                cur[name] = min(cur.get(name, n), n)
+            if name == "rpm":
+                ttl = 60.0 * _f(runtime.get("budget.learned_rpm_minutes", None, 10), 10)
+            else:
+                from app.ai.health import seconds_until_daily_reset
+                ttl = seconds_until_daily_reset(provider, self.clock())
+            cur = self._learned.setdefault(key, {})
+            old = cur.get(name)
+            value = min(old[0], n) if old and old[1] > self.clock() else n
+            cur[name] = (value, self.clock() + ttl)
 
     def learned(self, provider, model, group=None):
+        """{'rpm': n, 'rpd': n} for ceilings learned from limit errors that have not expired yet."""
         with self._lock:
-            return dict(self._learned.get(self._k(provider, model, group), {}))
+            now = self.clock()
+            raw = self._learned.get(self._k(provider, model, group), {})
+            return {k: v[0] for k, v in raw.items() if v[1] > now}
 
 
 TRACKER = Tracker()
